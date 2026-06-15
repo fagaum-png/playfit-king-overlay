@@ -1,83 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle - KOTC</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-</head>
-<body class="admin-body">
-    <div class="admin-grid">
-        <!-- Coluna 1: Configurações e Cores -->
-        <section class="admin-card">
-            <h3>⚙️ Configuração Geral</h3>
-            <div class="input-group">
-                <label>Nome da Competição</label>
-                <input type="text" id="cfg-comp-name" oninput="updateSettings()">
-            </div>
-            <div class="input-group">
-                <label>Evento</label>
-                <input type="text" id="cfg-event-name" oninput="updateSettings()">
-            </div>
-            <div class="input-group">
-                <label>Duração Round (Minutos)</label>
-                <input type="number" id="cfg-duration" value="15" onchange="updateSettings()">
-            </div>
-            <hr>
-            <h3>🎨 Visual e Cores</h3>
-            <div class="color-grid">
-                <div class="input-group">
-                    <label>Primária</label>
-                    <input type="color" id="clr-primary" oninput="updateSettings()">
-                </div>
-                <div class="input-group">
-                    <label>Destaque</label>
-                    <input type="color" id="clr-accent" oninput="updateSettings()">
-                </div>
-                <div class="input-group">
-                    <label>Texto</label>
-                    <input type="color" id="clr-text" oninput="updateSettings()">
-                </div>
-                <div class="input-group">
-                    <label>Opacidade</label>
-                    <input type="range" id="cfg-opacity" min="0" max="1" step="0.1" oninput="updateSettings()">
-                </div>
-            </div>
-            <button class="btn-secondary" onclick="saveTheme()">Salvar Tema</button>
-        </section>
+<script src="script.js"></script>
+    <script>
+        // Inicia a conexão
+        initControl();
 
-        <!-- Coluna 2: Controle de Jogo -->
-        <section class="admin-card">
-            <h3>⏱️ Cronômetro</h3>
-            <div class="timer-controls">
-                <button class="btn-success" onclick="timerControl('start')">Iniciar</button>
-                <button class="btn-warning" onclick="timerControl('pause')">Pausar</button>
-                <button class="btn-danger" onclick="timerControl('reset')">Resetar</button>
-            </div>
-            
-            <hr>
-            <h3>👑 Controle do Rei</h3>
-            <div id="admin-king-selector">
-                <!-- Dropdown de duplas -->
-            </div>
-            <div class="quick-actions">
-                <button class="btn-point" onclick="adjustScore(1)">+1 PONTO</button>
-                <button class="btn-point-minus" onclick="adjustScore(-1)">-1</button>
-            </div>
-        </section>
-
-        <!-- Coluna 3: Gestão de Duplas -->
-        <section class="admin-card">
-            <h3>👥 Ranking e Duplas</h3>
-            <div id="admin-teams-list">
-                <!-- Injetado via JS -->
-            </div>
-            <button class="btn-add" onclick="addNewTeam()">+ Adicionar Dupla</button>
-            <button class="btn-danger" style="margin-top:20px" onclick="resetAllPoints()">Zerar Todos os Pontos</button>
-        </section>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+        // Desenha os botões dos desafiantes
+        function renderControlRanking() {
+            const container = document.getElementById('ranking-controls');
+            container.innerHTML = '<h4>Desafiantes</h4>';
+            state.challengers.forEach((team, index) => {
+                const div = document.createElement('div');
+                div.style.marginBottom = "10px";
+                div.innerHTML = `
+                    <input type="text" value="${team.name}" oninput="state.challengers[${index}].name = this.value; pushUpdate()" style="width:50%">
+                    <button onclick="changeScore(${index}, 1)">+1</button>
+                    <button onclick="promoteToKing(${index})">👑</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        // Chama uma vez para desenhar a lista
+        setTimeout(renderControlRanking, 500);
+    </script>
