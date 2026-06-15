@@ -1,0 +1,80 @@
+:root {
+    --primary: #0f172a;
+    --accent: #f59e0b;
+    --text: #ffffff;
+    --bg-card: rgba(15, 23, 42, 0.85);
+    --king-color: #facc15;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Montserrat', sans-serif; overflow: hidden; }
+
+/* Overlay Specifics */
+.overlay-body { background: transparent !important; width: 1920px; height: 1080px; position: relative; }
+
+.top-bar {
+    position: absolute; top: 40px; left: 50px; right: 50px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--text);
+}
+
+.comp-info h1 { font-weight: 900; font-size: 2.5rem; letter-spacing: -1px; color: var(--accent); }
+.comp-info h2 { font-weight: 400; font-size: 1.2rem; opacity: 0.8; }
+
+.timer-container {
+    background: var(--bg-card); padding: 15px 40px;
+    border-radius: 50px; text-align: center; border: 2px solid var(--accent);
+}
+#timer-display { font-size: 3rem; font-weight: 900; line-height: 1; }
+.timer-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.2); margin-top: 5px; }
+#timer-progress { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+
+/* King Card */
+.king-section { position: absolute; top: 180px; left: 50px; }
+.king-card {
+    background: var(--bg-card); border-radius: 12px; overflow: hidden;
+    min-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-left: 8px solid var(--king-color);
+    animation: slideIn 0.5s ease-out;
+}
+.king-label { background: var(--king-color); color: #000; font-weight: 900; padding: 5px 15px; font-size: 0.8rem; }
+.king-content { display: flex; align-items: center; padding: 20px; justify-content: space-between; }
+#king-name { font-size: 2rem; font-weight: 700; color: var(--text); }
+.king-score { font-size: 3.5rem; font-weight: 900; color: var(--accent); }
+
+/* Ranking */
+.ranking-side {
+    position: absolute; top: 180px; right: 50px;
+    width: 350px; background: var(--bg-card); border-radius: 15px; overflow: hidden;
+}
+.ranking-header { background: var(--primary); padding: 15px; text-align: center; font-weight: 900; color: var(--accent); }
+.rank-item {
+    display: flex; align-items: center; padding: 12px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: var(--transition);
+}
+.rank-pos { width: 30px; font-weight: 900; opacity: 0.5; }
+.rank-name { flex: 1; font-weight: 700; color: var(--text); }
+.rank-score { font-weight: 900; color: var(--accent); font-size: 1.2rem; }
+.rank-item.leader { background: rgba(245, 158, 11, 0.2); border-left: 4px solid var(--accent); }
+
+/* Admin Panel Styles */
+.admin-body { background: #0f172a; color: white; overflow-y: auto; padding: 20px; }
+.admin-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px; max-width: 1400px; margin: 0 auto;
+}
+.admin-card { background: #1e293b; padding: 20px; border-radius: 12px; height: fit-content; }
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7; }
+input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+.btn-point { background: var(--accent); color: black; border: none; padding: 15px; font-weight: 900; cursor: pointer; width: 100%; border-radius: 8px; font-size: 1.2rem; }
+.quick-actions { display: grid; grid-template-columns: 3fr 1fr; gap: 10px; margin-top: 10px; }
+.team-edit-row { background: #334155; padding: 10px; margin-bottom: 5px; border-radius: 8px; display: grid; grid-template-columns: 1fr 50px 80px; gap: 5px; align-items: center; }
+
+@keyframes slideIn { from { transform: translateX(-100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Alertas */
+.low-time { color: #ef4444 !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }

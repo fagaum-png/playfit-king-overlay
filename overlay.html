@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOTC Overlay - Live Stream</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="overlay-body">
+    <div id="app" class="overlay-container">
+        <!-- Header: Competição e Evento -->
+        <header class="top-bar">
+            <div class="logo-area">
+                <img id="comp-logo" src="" alt="" class="hidden">
+                <div class="comp-info">
+                    <h1 id="display-comp-name">KING OF THE COURT</h1>
+                    <h2 id="display-event-name">ETAPA NACIONAL</h2>
+                </div>
+            </div>
+            
+            <!-- Cronômetro Central -->
+            <div class="timer-container">
+                <div id="timer-display">15:00</div>
+                <div class="timer-bar-bg"><div id="timer-progress"></div></div>
+            </div>
+
+            <div class="sponsor-area">
+                <img id="playfit-logo" src="" alt="" class="hidden">
+            </div>
+        </header>
+
+        <!-- Rei Atual (Destaque) -->
+        <main class="king-section">
+            <div class="king-card" id="king-card">
+                <div class="king-label">KING OF THE COURT</div>
+                <div class="king-content">
+                    <div class="king-team-color" id="king-color-indicator"></div>
+                    <span id="king-name">DUPLA A</span>
+                    <div class="king-score" id="king-score">0</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Ranking Lateral -->
+        <aside class="ranking-side">
+            <div class="ranking-header">LEADERBOARD</div>
+            <div id="ranking-list">
+                <!-- Injetado via JS -->
+            </div>
+        </aside>
+
+        <!-- Patrocinadores Rodapé -->
+        <footer class="footer-sponsors" id="sponsor-footer">
+            <!-- Logos de patrocinadores -->
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
