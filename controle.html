@@ -4,89 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel PlayFit</title>
-    <!-- Biblioteca de Conexão -->
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
-        body { background: #111; color: white; font-family: sans-serif; padding: 20px; }
+        body { background: #111; color: white; font-family: sans-serif; padding: 15px; }
         .card { background: #222; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #444; }
-        input { width: 100%; padding: 10px; box-sizing: border-box; background: #333; color: white; border: 1px solid #555; }
-        button { padding: 12px; cursor: pointer; font-weight: bold; border: none; border-radius: 5px; background: #f2e307; color: black; margin: 5px 0; }
-        .btn-red { background: #ff4444; color: white; }
-        .btn-king { background: #f2e307; }
-        #status { font-weight: bold; padding: 10px; border-radius: 5px; background: #333; margin-bottom: 15px; display: inline-block; }
+        input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; background: #333; color: white; border: 1px solid #555; }
+        button { padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; background: #f2e307; }
+        .btn-add { background: #4CAF50; color: white; width: 100%; margin-top: 10px; }
+        .btn-red { background: #f44336; color: white; }
+        .flex { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        #status { font-size: 12px; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
+    <div id="status" style="color: orange;">CONECTANDO...</div>
 
-    <div id="status" style="color: orange;">🔴 AGUARDANDO CONEXÃO...</div>
+    <div class="card">
+        <input type="text" id="evInput" placeholder="Nome do Evento" oninput="sync()">
+        <input type="text" id="spInput" placeholder="Patrocinador" oninput="sync()">
+    </div>
 
-    <!-- REI -->
-    <div class="card" style="border-color: #f2e307;">
-        <h3>👑 REI DA QUADRA</h3>
-        <input type="text" id="kingName" value="DUPLA REI" oninput="updateData()">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
-            <button onclick="changeScore('king', -1)" style="width: 30%;">-1</button>
-            <span id="kingScore" style="font-size: 32px;">0</span>
-            <button onclick="changeScore('king', 1)" style="width: 30%;">+1</button>
+    <div class="card" style="border: 2px solid #f2e307;">
+        <h3>👑 REI: <span id="kScoreDisp">0</span></h3>
+        <input type="text" id="kNameInput" placeholder="Nome do Rei" oninput="sync()">
+        <div class="flex">
+            <button onclick="changeScore('king', -1)" style="flex:1">-1</button>
+            <button onclick="changeScore('king', 1)" style="flex:1">+1</button>
         </div>
     </div>
 
-    <!-- CRONOMETRO -->
     <div class="card">
-        <h3>⏱ CRONÔMETRO: <span id="timerDisp">15:00</span></h3>
-        <button onclick="timerAct('start')">INICIAR</button>
-        <button onclick="timerAct('pause')" style="background: #ff9800;">PAUSAR</button>
-        <button onclick="timerAct('reset')" class="btn-red">RESET</button>
+        <h3>⏱ CRONÔMETRO: <span id="tDisp">15:00</span></h3>
+        <input type="number" id="tSet" value="15" style="width: 50px;"> min
+        <div class="flex">
+            <button onclick="timerAct('start')">INICIAR</button>
+            <button onclick="timerAct('pause')" style="background:orange">PAUSAR</button>
+            <button onclick="timerAct('reset')" class="btn-red">RESET</button>
+        </div>
     </div>
 
-    <!-- DESAFIANTES -->
-    <div id="challengersList"></div>
+    <div class="card">
+        <h3>📊 DESAFIANTES</h3>
+        <div id="teamsList"></div>
+        <button class="btn-add" onclick="addTeam()">+ ADICIONAR DUPLA</button>
+    </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const roomId = urlParams.get('room');
         let peer, conn;
-
         let state = {
-            king: { name: "DUPLA REI", score: 0 },
-            teams: [
-                { name: "Dupla 2", score: 0 },
-                { name: "Dupla 3", score: 0 },
-                { name: "Dupla 4", score: 0 }
-            ],
-            timer: 900,
-            timerRunning: false
+            event: "KING OF THE COURT", sponsor: "PLAYFIT",
+            king: { name: "Dupla 1", score: 0 },
+            teams: [{ name: "Dupla 2", score: 0 }],
+            timer: 900, timerRunning: false
         };
 
-        // Inicia o PeerJS
         function init() {
-            if (!roomId) {
-                document.body.innerHTML = "<h1>ERRO: Use ?room=1234 no link</h1>";
-                return;
-            }
-
             peer = new Peer();
-
             peer.on('open', () => {
                 conn = peer.connect(roomId);
                 conn.on('open', () => {
-                    document.getElementById('status').innerText = "✅ CONECTADO AO OVERLAY";
+                    document.getElementById('status').innerText = "✅ CONECTADO";
                     document.getElementById('status').style.color = "lime";
-                    send();
+                    sync();
                 });
             });
-
-            renderTeams();
-            
-            // Loop do tempo
-            setInterval(() => {
-                if (state.timerRunning && state.timer > 0) {
-                    state.timer--;
-                    updateUI();
-                    send();
-                }
-            }, 1000);
+            render();
+            setInterval(() => { if(state.timerRunning && state.timer > 0) { state.timer--; render(); sync(); } }, 1000);
         }
 
-        function updateData() {
-            state.king.name = doc
+        function sync() {
+            state.event = document.getElementById('evInput').value;
+            state.sponsor = document.getElementById('spInput').value;
+            state.king.name = document.getElementById('kNameInput').value;
+            if(conn && conn.open) conn.send(state);
+        }
+
+        function addTeam() {
+            state.teams.push({ name: "Nova Dupla", score: 0 });
+            render(); sync();
+        }
+
+        function removeTeam(i) {
+            state.teams.splice(i, 1);
+            render(); sync();
+        }
+
+        function changeScore(target, val) {
+            if(target === 'king') state.king.score = Math.max(0, state.king.score + val);
+            else state.teams[target].score = Math.max(0, state.teams[target].score + val);
+            render(); sync();
+        }
+
+        function promote(i) {
+            let oldK = {...state.king};
+            state.king = {...state.teams[i]};
+            state.teams[i] = oldK;
+            document.getElementById('kNameInput').value = state.king.name;
+            render(); sync();
+        }
+
+        function timerAct(a) {
+            if(a==='start') state.timerRunning = true;
+            if(a==='pause') state.timerRunning = false;
+            if(a==='reset') { state.timerRunning = false; state.timer = document.getElementById('tSet').value * 60; }
+            render(); sync();
+        }
+
+        function render() {
+            document.getElementById('kScoreDisp').innerText = state.king.score;
+            const m = Math.floor(state.timer / 60);
+            const s = state.timer % 60;
+            document.getElementById('tDisp').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+
+            const list = document.getElementById('teamsList');
+            list.innerHTML = "";
+            state.teams.forEach((t, i) => {
+                list.innerHTML += `
+                    <div style="background:#333; padding:10px; margin-bottom:5px; border-radius:5px;">
+                        <input type="text" value="${t.name}" oninput="state.teams[${i}].name=this.value; sync()">
+                        <div class="flex">
+                            <button onclick="changeScore(${i}, 1)">+1 Ponto</button>
+                            <b>${t.score}</b>
+                            <button onclick="promote(${i})">👑 REI</button>
+                            <button onclick="removeTeam(${i})" class="btn-red">X</button>
+                        </div>
+                    </div>`;
+            });
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>
